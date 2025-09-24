@@ -1,0 +1,136 @@
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+from typing import Any, Dict
+
+from openai import OpenAI
+
+from src.io.json_loader import load_squareyards_json
+from src.generation.sections import build_page_from_llm
+
+# ---------------- strict prompt for the LLM ----------------
+SYSTEM_PROMPT = """You are an expert real estate SEO copywriter and information architect.
+Write completely factual, human-friendly, and non-repetitive content based ONLY on the facts I provide.
+Do not invent numbers, dates, places, or claims that are not present in the facts.
+Use clear, simple language that first-time buyers and investors can understand.
+Avoid real-estate jargon; when a technical term is necessary, briefly explain it in-line the first time (e.g., “months of inventory — if no new homes come up for sale, how many months the current stock would take to sell at the recent pace”).
+Do not use abbreviations. If an abbreviation must appear (e.g., 2 BHK), write the full form first (“two-bedroom (2 BHK)”) and then you may use full words thereafter.
+Keep copy SEO- and answers-engine-friendly (AEO): concise headings, scannable bullets, sensible tables, internal link anchors, and no filler or repetition.
+Never repeat the same fact in multiple sections unless context demands it.
+Never include model names, prompts, or instructions in the output.
+Return ONLY a single JSON object following the schema I provide. No markdown fences, no commentary, no extra keys.
+"""
+
+SCHEMA = {
+  "hero_title": "string",
+  "hero_intro": "string",
+  "badges": [ "string" ],
+  "at_a_glance": [ { "label": "string", "value": "string" } ],
+  "overview": "string",
+  "why_live_here": [ "string" ],
+  "why_invest":   [ "string" ],
+  "connectivity": [ "string" ],
+  "lifestyle":    [ "string" ],
+  "pricing_intro": "string",
+  "pricing_drivers": [ "string" ],
+  "rent_intro": "string",
+  "rent_points": [ "string" ],
+  "housing_mix": [ "string" ],
+  "quality_of_life": [ "string" ],
+  "top_developers": [ "string" ],
+  "culture_geo_people": [ "string" ],
+  "news_items": [ "string" ],
+  "nearby_table": [
+     {
+       "rank": "string",
+       "locality": "string",
+       "rating": "string",
+       "typical_price_psf": "string",
+       "avg_monthly_rent": "string",
+       "for_sale": "string",
+       "for_rent": "string",
+       "new_projects": "string",
+       "best_for": "string"
+     }
+  ],
+  "faqs": [
+    {"q": "string", "a": "string"}
+  ],
+  "disclaimer": "string"
+}
+
+USER_TEMPLATE = """You will receive:
+1) FACTS: a JSON object with locality data (numbers, lists, interlinking).
+2) SCHEMA: the exact JSON keys and shapes you must output.
+
+Rules:
+- Use the numbers from FACTS wherever relevant (e.g., typical price per square foot, average monthly rent, active listings, ratings, nearby localities’ ranks and counts).
+- If any field is missing in FACTS, omit it gracefully without placeholders like “—”.
+- Keep language simple, persona-friendly, and free of heavy jargon.
+- Do not repeat the same information across sections.
+- Do not add external knowledge; only use FACTS for locality specifics. You may include generic, safe guidance (e.g., “plan extra time during peak traffic”) if it doesn’t contradict FACTS.
+- Do not include HTML. Output JSON only.
+
+FACTS:
+{facts_json}
+
+SCHEMA (output must match exactly):
+{schema_json}
+"""
+
+def _client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not set")
+    return OpenAI(api_key=api_key)
+
+def _call_llm(facts: Dict[str, Any], model: str) -> Dict[str, Any]:
+    client = _client()
+    user_msg = USER_TEMPLATE.format(
+        facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
+        schema_json=json.dumps(SCHEMA, ensure_ascii=False, indent=2),
+    )
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": user_msg},
+        ],
+    )
+    text = resp.choices[0].message.content
+    try:
+        return json.loads(text)
+    except Exception as e:
+        raise RuntimeError(f"LLM did not return valid JSON: {e}\n\n{text[:1200]}")
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--in", dest="inp", required=True, help="Path to locality JSON (e.g., data/whitefield.json)")
+    ap.add_argument("--out", dest="outdir", required=True, help="Output directory (e.g., out/whitefield)")
+    ap.add_argument("--model", default=None, help="OpenAI model (defaults to env PRIMARY_MODEL or gpt-4o-mini)")
+    args = ap.parse_args()
+
+    inp = Path(args.inp)
+    outdir = Path(args.outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    print(f"Loading JSON: {inp}")
+    facts = load_squareyards_json(inp)
+    (outdir / "normalized.json").write_text(json.dumps(facts, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    model = args.model or os.getenv("PRIMARY_MODEL") or "gpt-4o-mini"
+    sections = _call_llm(facts, model=model)
+    (outdir / "sections_llm.json").write_text(json.dumps(sections, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    html = build_page_from_llm(facts, sections)
+    (outdir / "index.html").write_text(html, encoding="utf-8")
+
+    print(f"Generated: {outdir / 'index.html'}")
+    print(f"Wrote normalized snapshot: {outdir / 'normalized.json'}")
+    print(f"Wrote sections JSON: {outdir / 'sections_llm.json'}")
+
+if __name__ == "__main__":
+    main()

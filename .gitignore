@@ -1,0 +1,29 @@
+# OS & editors
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+.env
+
+# Builds / outputs / caches
+out/
+dist/
+build/
+.coverage
+.pytest_cache/
+
+# Data you don't want public
+data/*.xlsx
+data/*.csv
+data/private/
+
+# Logs
+logs/
+*.log

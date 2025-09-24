@@ -1,0 +1,388 @@
+{
+  "locality_name": "Indiranagar",
+  "city_name": "Bengaluru",
+  "micromarket_name": "Inner East Bengaluru",
+  "pincode": "560038",
+  "locality_rank_in_city": 7,
+  "overall_city_locality_count": 210,
+  "slug": "bengaluru/indiranagar",
+  "boundary_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          77.6315,
+          12.9824
+        ],
+        [
+          77.6513,
+          12.9824
+        ],
+        [
+          77.6513,
+          12.966
+        ],
+        [
+          77.6315,
+          12.966
+        ],
+        [
+          77.6315,
+          12.9824
+        ]
+      ]
+    ]
+  },
+  "major_interlinking_roads": [
+    "100 Feet Road",
+    "CMH Road",
+    "Old Airport Road",
+    "Inner Ring Road (Domlur)"
+  ],
+  "new_launch_project_count": 6,
+  "under_construction_project_count": 18,
+  "partially_ready_to_move_society_count": 9,
+  "ready_to_move_society_count": 74,
+  "developed_project_count": 110,
+  "resale_property_count": 1560,
+  "sale_property_count": 1280,
+  "rent_property_count": 980,
+  "property_types": [
+    "Apartment",
+    "Independent House",
+    "Builder Floor"
+  ],
+  "property_type_counts": {
+    "Apartment": 1140,
+    "Independent House": 240,
+    "Builder Floor": 200
+  },
+  "bhk_types": [
+    "1BHK",
+    "2BHK",
+    "3BHK",
+    "4BHK+"
+  ],
+  "bhk_type_property_count": {
+    "1BHK": 210,
+    "2BHK": 520,
+    "3BHK": 430,
+    "4BHK+": 120
+  },
+  "major_property_type_demand_buy": {
+    "Apartment": 0.76,
+    "Independent House": 0.18,
+    "Builder Floor": 0.06
+  },
+  "major_bhk_type_demand_rent": {
+    "1BHK": 0.22,
+    "2BHK": 0.46,
+    "3BHK": 0.27,
+    "4BHK+": 0.05
+  },
+  "major_property_type_supply_buy": {
+    "Apartment": 0.71,
+    "Independent House": 0.2,
+    "Builder Floor": 0.09
+  },
+  "major_bhk_type_supply_rent": {
+    "1BHK": 0.25,
+    "2BHK": 0.41,
+    "3BHK": 0.28,
+    "4BHK+": 0.06
+  },
+  "avg_sale_price_psf": 19500,
+  "sale_price_range_psf": {
+    "min": 14500,
+    "max": 28000
+  },
+  "avg_rent_price": 42000,
+  "rental_price_range": {
+    "min": 22000,
+    "max": 120000
+  },
+  "asking_price_change_pct_3m": 1.8,
+  "rent_price_change_pct_3m": 2.5,
+  "price_percentiles_psf": {
+    "p10": 15000,
+    "p50": 19000,
+    "p90": 27000
+  },
+  "gov_txn_count": 3372,
+  "gov_txn_value_inr": 541800000000,
+  "avg_registered_rate_psf": 19550,
+  "gov_txn_period_start": "2024-09-01",
+  "gov_txn_period_end": "2025-08-31",
+  "absorption_90d": 360,
+  "months_of_inventory": 10.7,
+  "overall_rating": 4.4,
+  "rating_band": "3.5–4.49",
+  "lifestyle_index": 4.6,
+  "livability_index": 4.3,
+  "connectivity_index": 4.2,
+  "edu_health_index": 4.5,
+  "total_review_count": 2890,
+  "review_summary_ai": "Residents praise café culture, nightlife and walkability along 100 Feet & CMH Road, with quick access to EGL and Bagmane. Complaints center on peak-hour traffic, parking scarcity and weekend noise on high streets.",
+  "positive_review_tags": {
+    "cafes_and_dining": 987,
+    "walkability": 612,
+    "access_to_offices": 544
+  },
+  "negative_review_tags": {
+    "traffic": 731,
+    "parking": 508,
+    "weekend_noise": 266
+  },
+  "area_positioning": "Mixed",
+  "office_residential_mix_detail": "Residential blocks off 12th Main + office access via Domlur/Old Airport Road; strong rental market from EGL & Bagmane workforce.",
+  "nearby_employment_hubs": [
+    {
+      "name": "Embassy Golf Links (EGL)",
+      "distance_km": 3.5
+    },
+    {
+      "name": "Bagmane Tech Park (CV Raman Nagar)",
+      "distance_km": 4.5
+    }
+  ],
+  "nearest_metro": {
+    "name": "Indiranagar (Purple Line)",
+    "line": "Purple",
+    "distance_km": 0.0
+  },
+  "nearest_bus_stand": {
+    "name": "Indiranagar BDA Complex",
+    "distance_km": 0.5
+  },
+  "nearest_airport": {
+    "name": "Kempegowda International Airport",
+    "distance_km": 41.0
+  },
+  "commute_time_bins": {
+    "airport": {
+      "peak": "30–45 min",
+      "offpeak": "30–45 min"
+    },
+    "cbd": {
+      "peak": "20–30 min",
+      "offpeak": "15–20 min"
+    }
+  },
+  "schools_colleges": [
+    {
+      "name": "SSB International School",
+      "distance_km": 0.25
+    },
+    {
+      "name": "GHPS Appareddypalya",
+      "distance_km": 0.29
+    },
+    {
+      "name": "Sri Cauvery School",
+      "distance_km": 0.3
+    },
+    {
+      "name": "DQ Labs",
+      "distance_km": 0.33
+    },
+    {
+      "name": "K M J College Of Nursing.",
+      "distance_km": 0.34
+    }
+  ],
+  "hospitals": [
+    {
+      "name": "Respiratory and womens health clinic.",
+      "distance_km": 0.2
+    },
+    {
+      "name": "Qi Spine Clinic",
+      "distance_km": 0.2
+    },
+    {
+      "name": "Bhargavi Clinic",
+      "distance_km": 0.22
+    },
+    {
+      "name": "Dr.Spine Clinic",
+      "distance_km": 0.34
+    },
+    {
+      "name": "Motherhood Hospital(Unit Of Rhea Healthcare Pvt Ltd)",
+      "distance_km": 0.35
+    }
+  ],
+  "malls": [
+    {
+      "name": "1MG Lido Mall",
+      "distance_km": 3.2
+    },
+    {
+      "name": "Garuda Mall",
+      "distance_km": 4.5
+    }
+  ],
+  "hotels": [
+    {
+      "name": "The Leela Palace Bengaluru",
+      "distance_km": 2.7
+    },
+    {
+      "name": "Hilton Embassy GolfLinks",
+      "distance_km": 3.0
+    }
+  ],
+  "restaurants": [
+    {
+      "name": "Toit",
+      "distance_km": 0.9
+    },
+    {
+      "name": "The Fatty Bao",
+      "distance_km": 1.0
+    }
+  ],
+  "spiritual_places": [
+    {
+      "name": "Sai Baba Temple, Indiranagar",
+      "distance_km": 1.1
+    }
+  ],
+  "parks_open_spaces": [
+    {
+      "name": "BBMP Indiranagar Park (12th Main)",
+      "distance_km": 0.6
+    }
+  ],
+  "popular_developers": [
+    {
+      "name": "Prestige",
+      "total": 16,
+      "new_launch": 2,
+      "under_construction": 5,
+      "ready_to_move": 9
+    },
+    {
+      "name": "Brigade",
+      "total": 12,
+      "new_launch": 1,
+      "under_construction": 4,
+      "ready_to_move": 7
+    },
+    {
+      "name": "Sobha",
+      "total": 9,
+      "new_launch": 1,
+      "under_construction": 3,
+      "ready_to_move": 5
+    }
+  ],
+  "project_pipeline_catalysts": [
+    {
+      "type": "metro",
+      "name": "Purple Line headway & capacity upgrades (system-wide)",
+      "eta_quarter": "2026-Q1"
+    }
+  ],
+  "rera_coverage_pct": 92,
+  "nearby_localities": [
+    {
+      "name": "Domlur",
+      "rating": 4.2,
+      "sale_count": 520,
+      "rent_count": 410,
+      "new_project_count": 7
+    },
+    {
+      "name": "Halasuru (Ulsoor)",
+      "rating": 4.1,
+      "sale_count": 610,
+      "rent_count": 480,
+      "new_project_count": 6
+    },
+    {
+      "name": "CV Raman Nagar",
+      "rating": 4.0,
+      "sale_count": 720,
+      "rent_count": 560,
+      "new_project_count": 10
+    }
+  ],
+  "popular_landmarks": [
+    {
+      "name": "100 Feet Road",
+      "category": "High Street",
+      "distance_km": 0.0
+    },
+    {
+      "name": "CMH Road",
+      "category": "Market Street",
+      "distance_km": 0.0
+    },
+    {
+      "name": "Indiranagar BDA Complex",
+      "category": "Civic",
+      "distance_km": 0.5
+    }
+  ],
+  "primary_keywords": [
+    "flats for sale in Indiranagar",
+    "apartments in Indiranagar Bengaluru",
+    "rent in Indiranagar"
+  ],
+  "secondary_keywords": [
+    "3 BHK Indiranagar",
+    "property rates Indiranagar",
+    "ready to move flats Indiranagar"
+  ],
+  "meta_title_max60": "Indiranagar, Bengaluru: Property Rates, Trends & Connectivity",
+  "meta_description_max160": "See Indiranagar’s price trends, rental demand, commute, top schools & hospitals. Explore projects, verified listings & nearby areas.",
+  "faq_candidates": [
+    {
+      "q": "Is Indiranagar good for investment?",
+      "a": "Strong rental demand from nearby EGL and Bagmane, limited new supply and improving Purple Line capacity support steady capital appreciation over the medium term."
+    },
+    {
+      "q": "What is the average price per sq.ft. in Indiranagar?",
+      "a": "Around ₹19.5K/sq.ft. (P50), with most homes trading between ₹14.5K–₹28K/sq.ft., based on recent listings and registrations."
+    },
+    {
+      "q": "Which metro serves Indiranagar?",
+      "a": "Indiranagar station on Namma Metro’s Purple Line connects east–west across the city and to the CBD."
+    }
+  ],
+  "schema_place": {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": "Indiranagar, Bengaluru",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Indiranagar",
+      "addressRegion": "Karnataka",
+      "postalCode": "560038",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 12.973,
+      "longitude": 77.641
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 4.4,
+      "reviewCount": 2890
+    }
+  },
+  "breadcrumb_trail": [
+    "Bengaluru",
+    "Inner East",
+    "Indiranagar"
+  ],
+  "data_window_months": 3,
+  "last_updated_at": "2025-09-16T10:05:00+05:30",
+  "currency": "INR",
+  "area_unit": "sq_ft",
+  "psf_unit": "₹/sq_ft",
+  "data_completeness_score": 0.92,
+  "disclaimer_required": true
+}

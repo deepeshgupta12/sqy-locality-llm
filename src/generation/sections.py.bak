@@ -1,0 +1,235 @@
+from __future__ import annotations
+
+from typing import Any, Dict, List, Tuple
+import html
+
+# ---------------- HTML helpers ----------------
+def _h(tag: str, text: str) -> str:
+    return f"<{tag}>{html.escape(text)}</{tag}>"
+
+def _p(text: str) -> str:
+    return f"<p>{html.escape(str(text))}</p>"
+
+def _section_anchor(title: str) -> str:
+    return f'<a id="{title.lower().replace(" ","-")}"></a>'
+
+def _grid_table(headers: List[str], rows: List[List[str]]) -> str:
+    thead = "<thead><tr>" + "".join(f"<th>{html.escape(h)}</th>" for h in headers) + "</tr></thead>"
+    body = "<tbody>" + "".join("<tr>" + "".join(f"<td>{html.escape(str(c))}</td>" for c in r) + "</tr>" for r in rows) + "</tbody>"
+    return f'<table class="grid">{thead}{body}</table>'
+
+def _to_text(item: Any) -> str:
+    if item is None:
+        return ""
+    if isinstance(item, (int, float)):
+        return str(item)
+    if isinstance(item, str):
+        return item.strip()
+    if isinstance(item, dict):
+        if "label" in item and "value" in item:
+            return f"{item.get('label','')}: {item.get('value','')}".strip(": ").strip()
+        return ", ".join(f"{k}: {v}" for k, v in item.items())
+    if isinstance(item, (list, tuple)):
+        return ", ".join(_to_text(x) for x in item)
+    return str(item)
+
+def _list_to_ul(items: Any) -> str:
+    if items is None:
+        return ""
+    if isinstance(items, str):
+        items = [items]
+    if isinstance(items, dict):
+        items = [f"{k}: {v}" for k, v in items.items()]
+    if not isinstance(items, (list, tuple)):
+        items = [items]
+    normalized: List[str] = []
+    for x in items:
+        t = _to_text(x)
+        if t:
+            normalized.append(t)
+    if not normalized:
+        return ""
+    return "<ul>" + "".join(f"<li>{html.escape(li)}</li>" for li in normalized) + "</ul>"
+
+def _split_label_value(s: str) -> Tuple[str, str]:
+    for sep in [":", "—", "–", "-"]:
+        if sep in s:
+            l, r = s.split(sep, 1)
+            return l.strip(), r.strip()
+    return s.strip(), ""
+
+def _normalize_kv_pairs(pairs: Any) -> List[Tuple[str, str]]:
+    rows: List[Tuple[str, str]] = []
+    if pairs is None:
+        return rows
+    if isinstance(pairs, dict):
+        for k, v in pairs.items():
+            rows.append((str(k).strip(), "" if v is None else str(v).strip()))
+        return rows
+    if isinstance(pairs, (list, tuple)):
+        for it in pairs:
+            if it is None:
+                continue
+            if isinstance(it, dict) and "label" in it and "value" in it:
+                rows.append((str(it.get("label","")).strip(), str(it.get("value","")).strip()))
+            elif isinstance(it, (list, tuple)) and len(it) >= 2:
+                rows.append((str(it[0]).strip(), str(it[1]).strip()))
+            elif isinstance(it, str):
+                rows.append(_split_label_value(it))
+            else:
+                rows.append(_split_label_value(_to_text(it)))
+    return rows
+
+def _kv_pairs_to_table(pairs: Any) -> str:
+    rows = _normalize_kv_pairs(pairs)
+    if not rows:
+        return ""
+    trs = []
+    for k, v in rows:
+        trs.append(f"<tr><th>{html.escape(str(k))}</th><td>{html.escape(str(v))}</td></tr>")
+    return f'<table class="kv"><tbody>{"".join(trs)}</tbody></table>'
+
+# ---------------- Main renderer ----------------
+def build_page_from_llm(facts: Dict[str, Any], s: Dict[str, Any]) -> str:
+    name = (facts.get("locality_name") or "Locality")
+    city = (facts.get("city_name") or facts.get("locality_city_name") or "City")
+
+    head = f"""
+<!doctype html><html lang='en'><head>
+<meta charset='utf-8'/>
+<title>{html.escape(s.get('hero_title') or f"{name}, {city} Locality Overview: Homes, prices, lifestyle and nearby areas")}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.65;color:#111;padding:24px;max-width:980px;margin:0 auto;}}
+h1{{font-size:28px;margin:0 0 8px;}}
+h2{{font-size:22px;margin:28px 0 12px;}}
+h3{{font-size:18px;margin:22px 0 8px;}}
+.kv{{border-collapse:collapse;width:100%;margin:8px 0 16px}}
+.kv th{{background:#fafafa;text-align:left;padding:10px;border:1px solid #eee;width:32%}}
+.kv td{{padding:10px;border:1px solid #eee}}
+.grid{{border-collapse:collapse;width:100%;margin:8px 0 16px}}
+.grid th,.grid td{{border:1px solid #eee;padding:10px;vertical-align:top}}
+ul{{padding-left:20px;margin:8px 0 16px}}
+.hero-badges{{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 16px}}
+.badge{{background:#f5f5f7;border:1px solid #eee;border-radius:999px;padding:6px 12px;font-size:14px}}
+.nav{{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 12px}}
+.nav a{{font-size:14px;text-decoration:none;color:#0366d6}}
+.small{{color:#555;font-size:14px}}
+hr{{border:none;border-top:1px solid #eee;margin:24px 0}}
+blockquote{{background:#f9fafb;border-left:4px solid #e5e7eb;margin:12px 0;padding:10px 12px}}
+</style>
+</head><body>"""
+
+    parts: List[str] = []
+    parts.append(head)
+    parts.append(_p("Home › Localities"))
+
+    # Hero
+    parts.append(_h("h1", s.get("hero_title") or f"{name}, {city} Locality Overview: homes, prices, lifestyle and nearby areas"))
+    if s.get("hero_intro"):
+        parts.append(_p(s["hero_intro"]))
+    badges = s.get("badges") or []
+    if badges:
+        parts.append('<div class="hero-badges">' + "".join(f'<span class="badge">{html.escape(_to_text(b))}</span>' for b in badges) + "</div>")
+
+    # Local nav - reflecting merged sections and your headings rule
+    nav_items = [
+        f"At a glance",
+        f"Overview of {name}, {city}",
+        f"Why live in {name}, {city}?",
+        f"Connectivity in {name}, {city}",
+        f"Lifestyle and schools in {name}, {city}",
+        f"Indices and ratings for {name}, {city}",
+        f"Homes, prices and nearby areas in {name}, {city}",
+    ]
+    parts.append('<div class="nav">' + " • ".join(f'<a href="#{t.lower().replace(" ","-")}">{html.escape(t)}</a>' for t in nav_items) + "</div>")
+
+    # At a glance (table)
+    parts.append(_section_anchor("At a glance"))
+    parts.append(_h("h2", "At a glance"))
+    at_gl = _kv_pairs_to_table(s.get("at_a_glance") or [])
+    if not at_gl and s.get("at_a_glance") is not None:
+        at_gl = _list_to_ul(s.get("at_a_glance"))
+    parts.append(at_gl)
+
+    # Overview
+    parts.append(_section_anchor(f"Overview of {name}, {city}"))
+    parts.append(_h("h2", f"Overview of {name}, {city}"))
+    if s.get("overview"): parts.append(_p(s["overview"]))
+
+    # Why live here
+    parts.append(_section_anchor(f"Why live in {name}, {city}?"))
+    parts.append(_h("h2", f"Why live in {name}, {city}?"))
+    parts.append(_list_to_ul(s.get("why_live_here") or []))
+
+    # Connectivity
+    parts.append(_section_anchor(f"Connectivity in {name}, {city}"))
+    parts.append(_h("h2", f"Connectivity in {name}, {city}"))
+    parts.append(_list_to_ul(s.get("connectivity") or []))
+
+    # Lifestyle
+    parts.append(_section_anchor(f"Lifestyle and schools in {name}, {city}"))
+    parts.append(_h("h2", f"Lifestyle and schools in {name}, {city}"))
+    parts.append(_list_to_ul(s.get("lifestyle") or []))
+
+    # Indices (SquareYards exclusive)
+    parts.append(_section_anchor(f"Indices and ratings for {name}, {city}"))
+    parts.append(_h("h2", f"Indices and ratings for {name}, {city}"))
+    if s.get("indices_intro"):
+        parts.append(_p(s["indices_intro"]))
+    parts.append(_list_to_ul(s.get("indices_points") or []))
+
+    # Merged section: Prices, Rents, Housing Mix, Nearby Localities
+    parts.append(_section_anchor(f"Homes, prices and nearby areas in {name}, {city}"))
+    parts.append(_h("h2", f"Homes, prices and nearby areas in {name}, {city}"))
+    if s.get("merged_intro"):
+        parts.append(_p(s["merged_intro"]))
+
+    # Combined tables/blocks
+    mb = s.get("merged_blocks") or {}
+    # Pricing & rents
+    if mb.get("pricing_rent_rows"):
+        parts.append(_h("h3", "Prices and rents"))
+        parts.append(_grid_table(
+            ["Metric", "Value"],
+            [[r.get("label",""), r.get("value","")] for r in mb["pricing_rent_rows"]]
+        ))
+    # Housing mix
+    if mb.get("housing_mix_rows"):
+        parts.append(_h("h3", "Homes available"))
+        parts.append(_grid_table(
+            ["Category", "Count"],
+            [[r.get("label",""), r.get("value","")] for r in mb["housing_mix_rows"]]
+        ))
+    # Demand & supply
+    if mb.get("demand_supply_rows"):
+        parts.append(_h("h3", "What people look for"))
+        parts.append(_grid_table(
+            ["Type", "Share"],
+            [[r.get("label",""), r.get("value","")] for r in mb["demand_supply_rows"]]
+        ))
+
+    # Nearby localities (max 5)
+    nb = s.get("nearby_table") or []
+    if nb:
+        parts.append(_h("h3", "Nearby localities to compare"))
+        headers = ["Rank in city","Locality","Rating","Typical price (per sq ft)","Average monthly rent","For sale","For rent","New projects","Best for"]
+        rows: List[List[str]] = []
+        for r in nb[:5]:
+            if isinstance(r, dict):
+                rows.append([
+                    r.get("rank",""),
+                    r.get("locality",""),
+                    r.get("rating",""),
+                    r.get("typical_price_psf",""),
+                    r.get("avg_monthly_rent",""),
+                    r.get("for_sale",""),
+                    r.get("for_rent",""),
+                    r.get("new_projects",""),
+                    r.get("best_for",""),
+                ])
+        parts.append(_grid_table(headers, rows))
+        parts.append(_p("Compare projects in these areas to see exact prices and rents for your budget."))
+
+    parts.append("</body></html>")
+    return "".join(parts)
